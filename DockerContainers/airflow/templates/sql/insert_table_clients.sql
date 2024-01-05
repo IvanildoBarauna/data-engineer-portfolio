@@ -1,1 +1,0 @@
-INSERT INTO devel.clients (id, "name", execution_ts) VALUES('ivanildo_id', 'ivanildo_barauna', CURRENT_TIMESTAMP);
