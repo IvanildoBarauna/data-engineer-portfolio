@@ -56,9 +56,9 @@ def APIToParquet(endpoint: str):
                 # | "PrintData" >> beam.ParDo(lambda element: print(element))
                 | "WriteToParquet"
                 >> beam.io.WriteToParquet(
-                    filename=f"{output_path}dolar_today_{CurrentTimestampStr()}.parquet",
-                    schema=FileSchema
-                    ## Passar o header como variável, recuperando os keys json retornado
+                    file_path_prefix=f"{output_path}dolar_today_{CurrentTimestampStr()}",
+                    file_name_suffix=".parquet",
+                    schema=FileSchema,
                 )
             )
         logging.info("Pipeline executado com sucesso.")

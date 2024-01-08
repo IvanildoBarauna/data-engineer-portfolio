@@ -1,2 +1,0 @@
-created_at,parity,friendly_name,price,day_over_day,day_over_day_pct,higher,lower
-[{'code': 'USD', 'codein': 'BRL', 'name': 'Dólar Americano/Real Brasileiro', 'high': '4.938', 'low': '4.8602', 'varBid': '-0.0219', 'pctChange': '-0.45', 'bid': '4.8743', 'ask': '4.8755', 'timestamp': '1704488400', 'create_date': '2024-01-05 18:00:00'}]
