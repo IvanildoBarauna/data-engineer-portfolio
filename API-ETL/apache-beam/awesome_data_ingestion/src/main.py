@@ -1,6 +1,10 @@
-# import ELWithPandas as pipeline
-from awesome_data_ingestion.ExtractAndLoadWithPandas import ELWithPandas as pipeline
+from etl.extract import APIToParquet
 
-dic =  pipeline.AwesomeAPI().Currency.GetData("EUR", "BRL")
+def main():
+    APIToParquet("https://economia.awesomeapi.com.br/last/USD-BRL")
+    
+if __name__ == "__main__":
+    main()
 
-print(dic)
+
+    

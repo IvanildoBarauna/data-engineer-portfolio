@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.9"
 apache-beam = "^2.53.0"
 requests = "^2.31.0"
+logging = "^0.4.9.6"
 
 
 [build-system]
