@@ -1,17 +1,17 @@
 import apache_beam as beam
-from beam_config.PipelineConfiguration import DefaultPipeConfig
+from apache_beam.options.pipeline_options import PipelineOptions
 import requests as req
 from datetime import datetime
 import logging
 
 
 def APIToParquet(endpoint: str):
-    import pyarrow
-
     response = req.get(endpoint)
 
-    pipe_options = DefaultPipeConfig()
+    pipe_options = PipelineOptions()
     dic = response.json()
+
+    dic = dic["USDBRL"]
 
     output_path = "/Users/ivsouza/repos/data-engineer-portfolio/API-ETL/apache-beam/awesome_data_ingestion/data/external/kaggle/"
 
@@ -32,38 +32,32 @@ def APIToParquet(endpoint: str):
 
             beam_schema = pyarrow.schema(schema)
 
-            logging.info("Schema OK")
+            print("Schema - 200 OK")
 
             return beam_schema
 
         except Exception as Err:
-            logging.error(f"Schema Error >>>>> {Err}")
-
-    def dict_to_values_list(element):
-        return list(element.values())
+            print(f"Schema - 500 Error >>>> {Err}")
 
     try:
-        # logging.info("Iniciando geração de arquivo .avro")
-        # SchemaLoaded = AvroSchemaLoad(element=dic)
         FileSchema = ParquetSchemaLoad(dic)
         logging.info("Iniciando pipeline")
         with beam.Pipeline(options=pipe_options) as pipe:
             input_pcollection = (
                 pipe
                 | "Create" >> beam.Create([dic])
-                # | "ExtractHeader" >> beam.Map(extract_header)
-                | "ValuesList" >> beam.Map(dict_to_values_list)
-                # | "PrintData" >> beam.ParDo(lambda element: print(element))
                 | "WriteToParquet"
                 >> beam.io.WriteToParquet(
                     file_path_prefix=f"{output_path}dolar_today_{CurrentTimestampStr()}",
                     file_name_suffix=".parquet",
                     schema=FileSchema,
+                    row_group_buffer_size=1024 * 1024,
+                    record_batch_size=1000,
                 )
             )
-        logging.info("Pipeline executado com sucesso.")
+        print("Pipeline Execution - 200 OK")
     except Exception as err:
-        logging.error(f"Erro ao executar o pipeline: {err}")
+        print(f"Pipeline Execution - 500 Error >>>> {err}")
 
 
 APIToParquet("https://economia.awesomeapi.com.br/last/USD-BRL")
