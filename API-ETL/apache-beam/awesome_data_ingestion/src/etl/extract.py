@@ -6,14 +6,17 @@ import logging
 
 
 def APIToParquet(endpoint: str):
-    response = req.get(endpoint)
-
-    pipe_options = PipelineOptions()
-    dic = response.json()
-
-    dic = dic["USDBRL"]
-
     output_path = "/Users/ivsouza/repos/data-engineer-portfolio/API-ETL/apache-beam/awesome_data_ingestion/data/external/kaggle/"
+    pipe_options = PipelineOptions()
+
+    def CurrencyDictionary() -> dict:
+        response = req.get(endpoint)
+        dic = response.json()
+        arr_endpoint = endpoint.split("/")
+        params = arr_endpoint[len(arr_endpoint) - 1]
+        params = params.replace("-", "")
+
+        return dic[params]
 
     def CurrentTimestampStr() -> str:
         current = datetime.now().timestamp()
@@ -24,7 +27,6 @@ def APIToParquet(endpoint: str):
 
         try:
             api_header = list(element.keys())
-
             schema = []
 
             for field in api_header:
@@ -40,6 +42,7 @@ def APIToParquet(endpoint: str):
             print(f"Schema - 500 Error >>>> {Err}")
 
     try:
+        dic = CurrencyDictionary()
         FileSchema = ParquetSchemaLoad(dic)
         logging.info("Iniciando pipeline")
         with beam.Pipeline(options=pipe_options) as pipe:
@@ -58,6 +61,3 @@ def APIToParquet(endpoint: str):
         print("Pipeline Execution - 200 OK")
     except Exception as err:
         print(f"Pipeline Execution - 500 Error >>>> {err}")
-
-
-APIToParquet("https://economia.awesomeapi.com.br/last/USD-BRL")
