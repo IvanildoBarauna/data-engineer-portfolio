@@ -1,4 +1,4 @@
-# from etl.extract import APIToParquet
+from etl.extract import APIToParquet
 import pyarrow.parquet as pq
 
 # def main():
