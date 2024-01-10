@@ -2,12 +2,12 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 import requests as req
 from datetime import datetime
-import logging
+from .logs import ConsoleInfo
 
 
 def APIToParquet(endpoint: str):
     output_path = "/Users/ivsouza/repos/data-engineer-portfolio/API-ETL/apache-beam/awesome_data_ingestion/data/external/kaggle/"
-    pipe_options = PipelineOptions()
+    pipe_options = PipelineOptions(["--runner", "Direct"])
 
     def CurrencyDictionary() -> dict:
         response = req.get(endpoint)
@@ -34,17 +34,17 @@ def APIToParquet(endpoint: str):
 
             beam_schema = pyarrow.schema(schema)
 
-            print("Schema - 200 OK")
+            ConsoleInfo("Schema - 200 OK")
 
             return beam_schema
 
         except Exception as Err:
-            print(f"Schema - 500 Error >>>> {Err}")
+            ConsoleInfo(f"Schema - 500 Error >>>> {Err}")
 
     try:
         dic = CurrencyDictionary()
         FileSchema = ParquetSchemaLoad(dic)
-        logging.info("Iniciando pipeline")
+        ConsoleInfo("Iniciando pipeline")
         with beam.Pipeline(options=pipe_options) as pipe:
             input_pcollection = (
                 pipe
@@ -58,6 +58,6 @@ def APIToParquet(endpoint: str):
                     record_batch_size=1000,
                 )
             )
-        print("Pipeline Execution - 200 OK")
+        ConsoleInfo("Pipeline Execution - 200 OK")
     except Exception as err:
-        print(f"Pipeline Execution - 500 Error >>>> {err}")
+        ConsoleInfo(f"Pipeline Execution - 500 Error >>>> {err}")
