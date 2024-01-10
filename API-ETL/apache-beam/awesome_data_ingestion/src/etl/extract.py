@@ -1,7 +1,13 @@
+# Apache Beam Dependencies
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
+
+# Auxiliar Dependencies
+import pyarrow
 import requests as req
 from datetime import datetime
+
+# Custom Modules
 from .logs import ConsoleInfo
 
 
@@ -24,8 +30,6 @@ class ExtractDataAPI:
         return str(int(current))
 
     def ParquetSchemaLoad(self, element: dict):
-        import pyarrow
-
         try:
             api_header = list(element.keys())
             schema = []
