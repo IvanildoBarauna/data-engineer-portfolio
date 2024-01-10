@@ -5,24 +5,25 @@ from datetime import datetime
 from .logs import ConsoleInfo
 
 
-def APIToParquet(endpoint: str):
-    output_path = "/Users/ivsouza/repos/data-engineer-portfolio/API-ETL/apache-beam/awesome_data_ingestion/data/external/kaggle/"
-    pipe_options = PipelineOptions(["--runner", "Direct"])
+class ExtractDataAPI:
+    def __init__(self, endpoint: str, output_path: str) -> None:
+        self.endpoint = endpoint
+        self.output_path = output_path
+        self.pipe_options = PipelineOptions(["--runner", "Direct"])
 
-    def CurrencyDictionary() -> dict:
-        response = req.get(endpoint)
+    def CurrencyDictionary(self) -> dict:
+        response = req.get(self.endpoint)
         dic = response.json()
-        arr_endpoint = endpoint.split("/")
+        arr_endpoint = self.endpoint.split("/")
         params = arr_endpoint[len(arr_endpoint) - 1]
         params = params.replace("-", "")
-
         return dic[params]
 
-    def CurrentTimestampStr() -> str:
+    def CurrentTimestampStr(self) -> str:
         current = datetime.now().timestamp()
         return str(int(current))
 
-    def ParquetSchemaLoad(element: dict):
+    def ParquetSchemaLoad(self, element: dict):
         import pyarrow
 
         try:
@@ -41,23 +42,22 @@ def APIToParquet(endpoint: str):
         except Exception as Err:
             ConsoleInfo(f"Schema - 500 Error >>>> {Err}")
 
-    try:
-        dic = CurrencyDictionary()
-        FileSchema = ParquetSchemaLoad(dic)
-        ConsoleInfo("Iniciando pipeline")
-        with beam.Pipeline(options=pipe_options) as pipe:
-            input_pcollection = (
-                pipe
-                | "Create" >> beam.Create([dic])
-                | "WriteToParquet"
-                >> beam.io.WriteToParquet(
-                    file_path_prefix=f"{output_path}dolar_today_{CurrentTimestampStr()}",
-                    file_name_suffix=".parquet",
-                    schema=FileSchema,
-                    row_group_buffer_size=1024 * 1024,
-                    record_batch_size=1000,
+    def PipelineRun(self):
+        try:
+            dic = self.CurrencyDictionary()
+            FileSchema = self.ParquetSchemaLoad(dic)
+            ConsoleInfo("Iniciando pipeline")
+            with beam.Pipeline(options=self.pipe_options) as pipe:
+                input_pcollection = (
+                    pipe
+                    | "Create" >> beam.Create([dic])
+                    | "WriteToParquet"
+                    >> beam.io.WriteToParquet(
+                        file_path_prefix=f"{self.output_path}dolar_today_{self.CurrentTimestampStr()}",
+                        file_name_suffix=".parquet",
+                        schema=FileSchema,
+                    )
                 )
-            )
-        ConsoleInfo("Pipeline Execution - 200 OK")
-    except Exception as err:
-        ConsoleInfo(f"Pipeline Execution - 500 Error >>>> {err}")
+            ConsoleInfo("Pipeline Execution - 200 OK")
+        except Exception as err:
+            ConsoleInfo(f"Pipeline Execution - 500 Error >>>> {err}")
