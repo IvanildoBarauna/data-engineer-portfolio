@@ -7,9 +7,8 @@ import pyarrow
 import requests
 from datetime import datetime
 
-# Custom Modules
-from .logs import ConsoleInfo, WarningInfo
-
+# Custom Logs
+from .logs import ConsoleInfo, ConsoleError, ConsoleWarning
 
 class ExtractDataAPI:
     """
@@ -85,13 +84,13 @@ class ExtractDataAPI:
                 if param in list_of_avaliable:
                     valParams.append(param)
                 else:
-                    ConsoleInfo(f"Param: {param} is not valid for call")
+                    ConsoleWarning(f"Param: {param} is not valid for call")
             
             self.endpoint = self.endpoint.replace(''.join(params), ','.join(valParams))
             return valParams
         ## Se for válido segue
         
-        ParamsValidate = [item.replace('-', '') for item in ValidListOfParams()]
+        ParamsValidate = ValidListOfParams()
         if ParamsValidate:
             ConsoleInfo(f"Parameters OK >>> {ParamsValidate}")
             response = requests.get(self.endpoint)
@@ -99,7 +98,7 @@ class ExtractDataAPI:
                 ConsoleInfo(f"Response OK >>> {response}")
                 return dict(responseData=response.json(), params=ParamsValidate)
             else:
-                WarningInfo(f"Response failed >>> {response}")
+                ConsoleError(f"Response failed >>> {response}")
 
     def CurrentTimestampStr(self) -> str:
         """ 
@@ -183,12 +182,16 @@ class ExtractDataAPI:
         if response:
             json_data = response["responseData"]
             params = response["params"]
-
-            FileSchema = self.ParquetSchemaLoad(json_data[params[0]])
+            
+            ## For generate schema is necessary extract one currency from dicionary
+            extract_index_params = [item.replace("-", "") for item in params]      
+            ## Extract Schema              
+            FileSchema = self.ParquetSchemaLoad(json_data[extract_index_params[0]]
+                                                )
             insert_date = self.CurrentTimestampStr()
 
             for index, param in enumerate(params):
-                dic = json_data[param]
+                dic = json_data[param.replace("-", "")]
 
                 if dic:
                     try:
@@ -201,7 +204,7 @@ class ExtractDataAPI:
                                 | "Create" >> beam.Create([dic])
                                 | "WriteToParquet"
                                 >> beam.io.WriteToParquet(
-                                    file_path_prefix=f"{self.output_path}{param}_{insert_date}",
+                                    file_path_prefix=f"{self.output_path}{param}-{insert_date}",
                                     file_name_suffix=".parquet",
                                     num_shards=1,
                                     schema=FileSchema,
@@ -213,8 +216,8 @@ class ExtractDataAPI:
                         )
 
                         self.ExtractedFilePath.append(
-                            f"{self.output_path}{param}_{insert_date}-00000-of-00001.parquet"
+                            f"{self.output_path}{param}-{insert_date}-00000-of-00001.parquet"
                         )
 
                     except Exception as err:
-                        ConsoleInfo(f"{param} - Pipeline Execution Error >>>  {err}")
+                        ConsoleError(f"{param} - Pipeline Execution Error >>>  {err}")
