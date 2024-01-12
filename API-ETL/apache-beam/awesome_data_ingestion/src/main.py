@@ -1,9 +1,12 @@
 from etl.extract import ExtractDataAPI
+from etl.transform import TransformAPIData
 import os
 
-api = "https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL,BTC-USD,ETH-USD"
-path = f"/Users/{os.getenv('USER')}/repos/data-engineer-portfolio/API-ETL/apache-beam/awesome_data_ingestion/data/external/kaggle/"
+api = "https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL"
+path = f"/Users/{os.getenv('USER')}/repos/data-engineer-portfolio/API-ETL/apache-beam/awesome_data_ingestion/data/raw/kaggle/"
 
 NewExtract = ExtractDataAPI(endpoint=api, output_path=path)
-
 NewExtract.PipelineRun()
+
+NewTransform = TransformAPIData(ExtractedFiles=NewExtract.ExtractedFilePath)
+NewTransform.PipelineRun()

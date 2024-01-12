@@ -1,28 +1,35 @@
-def x():
-    import datetime
-    
-    current_timestamp = datetime.datetime.now().timestamp().__str__()
-    current_timestamp = current_timestamp.replace(".", "")
+from venv import create
+import apache_beam as beam
+import pyarrow.parquet as pq
+from apache_beam.options.pipeline_options import PipelineOptions
 
-    url_prefix = "https://economia.awesomeapi.com.br/last/"
-    curr = "USD"
-    curr_compare = "BRL"
-    parity = f"{curr}{curr_compare}"
-    url_get = f"{url_prefix}{curr}-{curr_compare}"
+from .logs import ConsoleInfo, WarningInfo
+
+
+
+class ReadParquet(beam.DoFn):
+    def __init__(self, ExtractedFiles: list) -> None:
+        self.ExtractedFiles = ExtractedFiles    
+        self.pipe_options = PipelineOptions(['--runner', 'Direct'])
     
-    
-    dic = {
-        "created_at": json["create_date"],
-        "parity": f"{curr}-{curr_compare}",
-        "friendly_name": json["name"],
-        "price": json["bid"],
-        "day_over_day": json["varBid"],
-        "day_over_day_pct": json["pctChange"],
-        "higher": json["high"],
-        "lower": json["low"],
-    }
-    
-    def dict_to_values_list(element):
-        return list(element.values())
-    
-    pass
+    def process(self, element):
+        parquet_file = pq.ParquetFile(element)
+        
+        for i in range(parquet_file.num_row_groups):
+            # Lê um grupo específico
+            table = parquet_file.read_row_group(i)
+            # Converte cada linha em um dicionário
+            for row in table:
+                yield row.as_py()
+
+def PipeRun(self):
+    for file in self.ExtractedFiles:    
+        with beam.Pipeline(options=self.pipe_options) as pipe:
+            p =(
+                pipe 
+                | "CreateBeam" >> beam.Create([file])    
+                | "ReadParquet" >> beam.ParDo()
+            )
+            
+        
+        

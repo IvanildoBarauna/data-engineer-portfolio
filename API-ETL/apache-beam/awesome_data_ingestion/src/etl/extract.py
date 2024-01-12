@@ -16,6 +16,7 @@ class ExtractDataAPI:
         self.endpoint = endpoint
         self.output_path = output_path
         self.pipe_options = PipelineOptions(["--runner", "Direct"])
+        self.ExtractedFilePath = []
 
     def APIToDicionary(self):
         response = requests.get(self.endpoint)
@@ -77,8 +78,12 @@ class ExtractDataAPI:
                                 schema=FileSchema,
                             )
                         )
+                    
                     ConsoleInfo(
                         f"Pipeline execution OK >> {index + 1} of {len(params)} - {param} - Extracted!"
                     )
+                    
+                    self.ExtractedFilePath.append(f"{self.output_path}{param}_{insert_date}.parquet")
+                    
                 except Exception as err:
                     ConsoleInfo(f"{param} - Pipeline Execution Error >>>  {err}")
