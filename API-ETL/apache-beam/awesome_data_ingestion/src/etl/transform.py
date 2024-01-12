@@ -1,35 +1,19 @@
-from venv import create
-import apache_beam as beam
-import pyarrow.parquet as pq
 from apache_beam.options.pipeline_options import PipelineOptions
+import apache_beam as beam
 
-from .logs import ConsoleInfo, WarningInfo
-
-
-
-class ReadParquet(beam.DoFn):
-    def __init__(self, ExtractedFiles: list) -> None:
-        self.ExtractedFiles = ExtractedFiles    
-        self.pipe_options = PipelineOptions(['--runner', 'Direct'])
-    
-    def process(self, element):
-        parquet_file = pq.ParquetFile(element)
+class TransformAPIData:
+    def __init__(self, FolderFiles) -> None:
+        self.path =  FolderFiles
+        self.pipe_options = PipelineOptions([
+            '--runner', 'Direct'
+        ])
         
-        for i in range(parquet_file.num_row_groups):
-            # Lê um grupo específico
-            table = parquet_file.read_row_group(i)
-            # Converte cada linha em um dicionário
-            for row in table:
-                yield row.as_py()
-
-def PipeRun(self):
-    for file in self.ExtractedFiles:    
-        with beam.Pipeline(options=self.pipe_options) as pipe:
-            p =(
-                pipe 
-                | "CreateBeam" >> beam.Create([file])    
-                | "ReadParquet" >> beam.ParDo()
+    def PipelineRun(self):
+        with beam.Pipeline(options=self.pipe_options) as p:
+            beam_pipe = (
+                p 
+                | "ReadFromParquetFile" >> beam.io.ReadFromParquetBatched(self.path)
+                | "Parquet to Pandas" >> beam.Map(lambda x: x.to_pandas())
+                | "Printing DataFrame" >> beam.Map(print)
             )
             
-        
-        
