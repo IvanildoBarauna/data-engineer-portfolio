@@ -1,13 +1,23 @@
-def oddNumbers(*args):
-    oddNums = []
-    for number in args:
-        if number % 2 != 0: oddNums.append(number)
+class NumbersParity:
+    
+    def __init__(self, *args) -> None:
+        self.nums = args,
+        self.odds = self.NumbersParity()[0],
+        self.pairs = self.NumbersParity()[1],
         
-    return oddNums
 
-def pairsNumbers(*args):
-    pairsNums = []
-    for number in args:
-        if number % 2 == 0: pairsNums.append(number)
+    def NumbersParity(self):
+        """
+        Input: Any numbers
+        Output: Two lists, the first is Pairs Numbers and second odd Numbers
+        """
+        oddNums = []
+        pairsNums = []
         
-    return pairsNums
+        for number in self.nums:
+            if number % 2 == 0:
+                pairsNums.append(number)
+            elif number % 2 != 0:
+                oddNums.append(number)
+            
+        return pairsNums, oddNums
