@@ -14,13 +14,13 @@ Explore meu perfil e acompanhe meu progresso na empolgante jornada da engenharia
 
 - **ETL Eficiente:** Desenvolvimento de pipelines para processamento de grandes volumes de dados.
   
-- **Processamento Distribuído:** Experiência em Apache Spark para lidar com processamento distribuído.
+- **Processamento Distribuído:** Experiência em Apache Beam para lidar com processamento distribuído.
 
 - **Ingestão de Dados:** Coleta de dados de APIs e outras fontes.
 
-- **Modelagem de Dados:** Design e implementação de modelos robustos e escaláveis.
+- **Modelagem de Dados:** Design e implementação de modelos robustos e "auto curáveis".
 
-- **Análise e Visualização de Dados:** Utilização de pandas, Streamlit e Plotly.
+- **Análise e Visualização de Dados:** Power BI, utilização de pandas e Streamlit.
 
 - **Automatização com VBA:** Desenvolvimento de projetos VBA para automação de tarefas manuais no Excel, incluindo inserção e geração de relatórios automatizados.
 
