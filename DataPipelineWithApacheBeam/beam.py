@@ -23,3 +23,28 @@ with beam.Pipeline(options=pipe_options) as pipe:
         | 'ReadFile' >> beam.io.ReadFromText(input_file)
         | 'WriteOutput' >> beam.io.WriteToText(file_path_prefix=f'{output_path}{current_timestamp}', file_name_suffix='.avro', num_shards=0)
     )
+    
+    
+    
+#### Schema with pyarrow
+import pyarrow
+
+def DefaultQuotesAPISchema():
+    api_header = [
+        "code",
+        "codein",
+        "name",
+        "high",
+        "low",
+        "varBid",
+        "pctChange",
+        "bid",
+        "ask",
+        "timestamp",
+        "create_date"]
+
+    schema = []
+    for field in api_header:
+        schema += [(field, pyarrow.string())]
+
+    return pyarrow.schema(schema)
