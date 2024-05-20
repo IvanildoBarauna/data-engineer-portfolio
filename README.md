@@ -7,7 +7,7 @@ Aberto a colaborações e discussões sobre BI, Dados e Analytics:
 - LinkedIn: [Perfil do LinkedIn](https://www.linkedin.com/in/ivanildobarauna)
 - E-mail: [ivanildo.jnr@outlook.com](mailto:ivanildo.jnr@outlook.com)
 
-Explore meu perfil e acompanhe meu progresso na empolgante jornada da engenharia de dados!
+Explore meu [perfil](https://github.com/IvanildoBarauna/) aqui no GitHub e acompanhe meu progresso na empolgante jornada da engenharia de dados!
 
 
 ## Habilidades em Engenharia de Dados
