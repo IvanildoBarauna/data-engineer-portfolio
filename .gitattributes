@@ -1,2 +1,10 @@
+# VBA
 *.vb linguist-language=VBA
 *.frx linguist-language=VBA
+
+# Dockerfile
+Dockerfile linguist-language=Docker
+
+# Docker Compose files
+docker-compose.yml linguist-language=Docker
+docker-compose.yaml linguist-language=Docker
